@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router/build/exports';
 import { useVideoPlayer, VideoView, } from "expo-video";
 import { useCallback } from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
 
@@ -11,11 +11,11 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 type VideoItemProps = {
     postItem: Post
     isActive: boolean
+    height: number
 }
 
 
-export default function PostListItem({ postItem, isActive }: VideoItemProps) {
-    const { height } = Dimensions.get('window');
+export default function PostListItem({ postItem, isActive, height }: VideoItemProps) {
     const { video_url, nrOfLikes, description, user, nrOfComments, nrOfShares } = postItem;
     const player = useVideoPlayer(video_url, player => {
         player.loop = true;
@@ -51,7 +51,7 @@ export default function PostListItem({ postItem, isActive }: VideoItemProps) {
 
 
     return (
-        <View style={{ height: height - 100 }}>
+        <View style={{ height }}>
             <VideoView style={{ flex: 1 }} player={player} contentFit="cover" nativeControls={false} />
             <View style={styles.interactionBar}>
                 <TouchableOpacity style={styles.interactionButton} onPress={() => console.log('Like pressed')} >

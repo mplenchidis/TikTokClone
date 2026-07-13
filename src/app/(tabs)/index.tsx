@@ -1,8 +1,9 @@
 import PostListItem from '@/components/PostListItem';
 import posts from '@assets/data/posts.json';
-import { useRef, useState, } from 'react';
-import { Dimensions, FlatList, View, ViewToken, StyleSheet } from 'react-native';
+import { useState, } from 'react';
+import { FlatList, View, StyleSheet, useWindowDimensions, Platform, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 import FeedTab from '@/components/GenericComponents/FeedTab';
 
@@ -15,20 +16,19 @@ const TABS = {
 }
 
 export default function HomeScreen() {
-    const height = Dimensions.get('window').height;
+    const { height: windowHeight } = useWindowDimensions();
+    const tabBarHeight = useBottomTabBarHeight();
+    const itemHeight = windowHeight - tabBarHeight;
     const [currentIndex, setCurrentIndex] = useState(0);
     const [activeTab, setActiveTab] = useState(TABS.FOR_YOU);
 
-    const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-        if (viewableItems.length > 0) {
-            setCurrentIndex(viewableItems[0].index || 0);
-        }
-    });
-
-    console.log('Current Index:', currentIndex);
+    const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const newIndex = Math.round(event.nativeEvent.contentOffset.y / itemHeight);
+        setCurrentIndex(newIndex);
+    };
 
     return (
-        <View>
+        <View style={{ height: itemHeight }}>
 
             <View style={styles.topBar}>
                 <MaterialIcons name="live-tv" size={24} color="white" />
@@ -41,13 +41,16 @@ export default function HomeScreen() {
                 <Ionicons name="search" size={24} color="white" />
             </View>
             <FlatList
+                style={{ flex: 1 }}
                 data={posts}
-                renderItem={({ item, index }) => <PostListItem postItem={item} isActive={currentIndex === index} />}
+                renderItem={({ item, index }) => <PostListItem postItem={item} isActive={currentIndex === index} height={itemHeight} />}
                 showsVerticalScrollIndicator={false}
-                snapToInterval={height - 80}
+                pagingEnabled={Platform.OS === 'web'}
+                snapToInterval={itemHeight}
                 decelerationRate="fast"
                 disableIntervalMomentum
-                onViewableItemsChanged={onViewableItemsChanged.current}
+                onScroll={onScroll}
+                scrollEventThrottle={16}
             />
         </View>
     );
