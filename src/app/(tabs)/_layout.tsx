@@ -21,6 +21,7 @@ export default function TabsLayout() {
             }} />
             <Tabs.Screen name="newPost" options={{
                 title: "New Post",
+                headerShown: false,
                 tabBarIcon: ({ color }) => (
                     <Feather name="plus-square" size={24} color={color} />
                 )
