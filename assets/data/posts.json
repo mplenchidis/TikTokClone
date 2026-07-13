@@ -1,7 +1,7 @@
 [
     {
         "id": "1",
-        "video_url": "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4",
+        "video_url": "https://lorem.video/cat_128kbps",
         "description": "A classic animation about a big bunny in the forest.",
         "user": {
             "id": "101",
@@ -26,7 +26,7 @@
     },
     {
         "id": "2",
-        "video_url": "https://archive.org/download/ElephantsDream/ed_hd.mp4",
+        "video_url": "https://lorem.video/cat_128kbps",
         "description": "Dive into the surreal story of the Elephants Dream.",
         "user": {
             "id": "102",
@@ -51,7 +51,7 @@
     },
     {
         "id": "3",
-        "video_url": "https://archive.org/download/Sintel/sintel-2048-surround_512kb.mp4",
+        "video_url": "https://lorem.video/cat_128kbps",
         "description": "An intense chase scene with blazing action.",
         "user": {
             "id": "103",
@@ -76,7 +76,7 @@
     },
     {
         "id": "4",
-        "video_url": "https://archive.org/download/Tears-of-Steel/tears_of_steel_720p.mp4",
+        "video_url": "https://lorem.video/cat_128kbps",
         "description": "Thrilling escapes from danger, edge of your seat stuff!",
         "user": {
             "id": "104",
@@ -101,7 +101,7 @@
     },
     {
         "id": "5",
-        "video_url": "https://archive.org/download/CaminandesLlamaDrama/Caminandes_Llama_Drama_1080p.mp4",
+        "video_url": "https://lorem.video/cat_128kbps",
         "description": "Fun moments captured perfectly for your entertainment.",
         "user": {
             "id": "105",
