@@ -4,7 +4,9 @@ import { useAuthStore } from '@/stores/useAuthStore'
 export default function ProtectedLayout() {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-
+    if (!isAuthenticated) {
+        <Redirect href={'/login'} />
+    }
 
     return (
         <Stack>
