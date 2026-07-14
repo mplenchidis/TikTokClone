@@ -1,4 +1,4 @@
-import { Text, View, Button, StyleSheet, TouchableOpacity, TextInput, Platform, KeyboardAvoidingView, } from 'react-native';
+import { Text, View, Button, StyleSheet, TouchableOpacity, TextInput, Platform, KeyboardAvoidingView, Alert, } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 import { CameraView, CameraType, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
@@ -7,6 +7,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useVideoPlayer, VideoView, } from 'expo-video';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '@/stores/useAuthStore';
+import * as FileSystem from 'expo-file-system';
+import { createPost, uploadVideoToStorage } from '@/services/posts';
 
 
 export default function NewPostScreen() {
@@ -15,11 +19,39 @@ export default function NewPostScreen() {
     const [isRecording, setIsRecording] = useState<boolean>(false);
     const [description, setDescription] = useState<string>('');
     const [video, setVideo] = useState<string>();
+    const user = useAuthStore((state) => state.user)
 
     const cameraRef = useRef<CameraView>(null);
 
+    const queryClient = useQueryClient()
+
     const [permission, requestPermission] = useCameraPermissions();
     const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
+
+    const { mutate: createNewPost, isPending } = useMutation({
+        mutationFn: async ({ video, description }: { video: string, description: string }) => {
+            const fileExtension = video.split('.').pop() || 'mp4'
+            const fileName = `${user?.id}/${Date.now()}.${fileExtension}`
+
+            const file = new FileSystem.File(video)
+            const fileBuffer = await file.bytes();
+            const videoUrl = await uploadVideoToStorage({ fileName, fileExtension, fileBuffer })
+            if (user) {
+                await createPost({ video_url: videoUrl, description, user_id: user.id })
+            }
+
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['posts'] })
+            videoPlayer.release()
+            setDescription('');
+            setVideo('');
+            router.replace('/')
+        },
+        onError: () => {
+            Alert.alert('Error', 'Something went wrong. Try again!')
+        }
+    })
 
 
     const videoPlayer = useVideoPlayer(null, (player) => {
@@ -76,6 +108,13 @@ export default function NewPostScreen() {
     }
 
     const postVideo = () => {
+        if (!video) {
+            Alert.alert("Error", "No video Selected")
+            return;
+
+        }
+
+        createNewPost({ video, description })
     }
 
     const stopRecording = () => {

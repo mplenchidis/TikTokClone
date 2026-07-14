@@ -56,7 +56,7 @@ export default function PostListItem({ postItem, isActive, height }: VideoItemPr
             <View style={styles.interactionBar}>
                 <TouchableOpacity style={styles.interactionButton} onPress={() => console.log('Like pressed')} >
                     <Ionicons name="heart" size={33} color="#fff" />
-                    <Text style={styles.interactionText}>{nrOfLikes[0].count || 0}</Text>
+                    <Text style={styles.interactionText}>{0}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.interactionButton} onPress={() => console.log('Comment Pressed')} >
@@ -65,7 +65,7 @@ export default function PostListItem({ postItem, isActive, height }: VideoItemPr
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.interactionButton} onPress={() => console.log('Share Pressed')} >
                     <Ionicons name="arrow-redo" size={33} color="#fff" />
-                    <Text style={styles.interactionText}>{nrOfShares[0].count || 0}</Text>
+                    <Text style={styles.interactionText}>{0}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.interactionButton} onPress={() => console.log('Profile Pressed')} >
                     <View style={styles.avatar}>

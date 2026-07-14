@@ -1,11 +1,12 @@
 import PostListItem from '@/components/PostListItem';
-import posts from '@assets/data/posts.json';
-import { useState, } from 'react';
-import { FlatList, View, StyleSheet, useWindowDimensions, Platform, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { useState, useMemo } from 'react';
+import { FlatList, View, StyleSheet, useWindowDimensions, Platform, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator, Text } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 import FeedTab from '@/components/GenericComponents/FeedTab';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { fetchPosts } from '@/services/posts';
 
 
 
@@ -21,6 +22,47 @@ export default function HomeScreen() {
     const itemHeight = windowHeight - tabBarHeight;
     const [currentIndex, setCurrentIndex] = useState(0);
     const [activeTab, setActiveTab] = useState(TABS.FOR_YOU);
+
+
+    const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+        queryKey: ['posts'],
+        queryFn: ({ pageParam }) => fetchPosts(pageParam),
+        initialPageParam: { limit: 3, cursor: undefined },
+        getNextPageParam: (lastPage, allPages) => {
+            if (lastPage.length === 0) {
+                return undefined
+            }
+            return {
+                limit: 3,
+                cursor: lastPage[lastPage.length - 1].id
+            }
+        }
+    })
+
+
+    const posts = useMemo(() => data?.pages.flat() || [], [data])
+
+
+    if (isLoading) {
+        return (
+            <ActivityIndicator size={'large'} style={{ flex: 1, justifyContent: 'center' }} />
+        )
+    }
+    if (error) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center' }} >
+                <Text style={{
+                    color: "#fff",
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    fontSize: 10
+                }}>
+                    Error Occured while fetching the posts
+
+                </Text>
+            </View>
+        )
+    }
 
     const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const newIndex = Math.round(event.nativeEvent.contentOffset.y / itemHeight);
@@ -51,6 +93,8 @@ export default function HomeScreen() {
                 disableIntervalMomentum
                 onScroll={onScroll}
                 scrollEventThrottle={16}
+                onEndReached={() => !isFetchingNextPage && hasNextPage && fetchNextPage()}
+                onEndReachedThreshold={2}
             />
         </View>
     );
